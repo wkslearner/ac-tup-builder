@@ -1,8 +1,11 @@
-from ac_tup_builder.component import DataSource
+from ac_tup_builder.component import DataSource, TupBuilder, CompositeTagsBuilder
 from ac_tup_builder.context import SqlAlchemyRowDataContext, DataContext
+from ac_tup_builder.tags_builder.population.base import GenderTagsBuilder
 from ti_daf import SqlTemplate
 import sqlalchemy as sa
 from ac_tup_builder.util import RelatedPartyIdFinder
+import logging
+from ac_tup_builder.util import parse_time_range
 
 
 class OrgPartyDataSource(DataSource):
@@ -18,6 +21,7 @@ class OrgPartyDataSource(DataSource):
                                 or
                                 (Party.updTime>=:fromTime and Party.updTime<:toTime)
                             )
+                        order by Party.updTime
         '''
 
         sql_paras = dict()
@@ -41,3 +45,23 @@ class OrgPartyDataSource(DataSource):
     def close(self):
         self.result.close()
         self.session.close()
+
+
+def build_by_org_party(extract_date=None, from_date=None, to_date=None):
+    logger = logging.getLogger(__name__)
+
+    from_time, to_time = parse_time_range(extract_date, from_date, to_date)
+    logger.info('Prepare to build tup by OrgParty, fromTime=[%s], toTime=[%s].' % (from_time, to_time))
+
+    ds = OrgPartyDataSource(from_time=from_time, to_time=to_time)
+
+    tags_builders = list()
+    tags_builders.append(GenderTagsBuilder())
+    tags_builder = CompositeTagsBuilder(tags_builders)
+
+    tup_builder = TupBuilder(ds, tags_builder)
+    row_count = tup_builder.build()
+
+    logger.info('Finish to build tup by OrgParty, fromTime=[%s], toTime=[%s], rowCount=[%s].'%(from_time, to_time, row_count))
+
+    return row_count

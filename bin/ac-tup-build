@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import fire
+from ac_tup_builder.config import init_app
+from ac_tup_builder.tup_build_task.org_party_tup_builder import build_by_org_party
+
+
+if __name__ == '__main__':
+    init_app()
+    fire.Fire()

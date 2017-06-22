@@ -1,6 +1,7 @@
 from ti_daf import sql_util, TxMode
 from ti_daf.sql_tx import session_scope
 import logging
+from datetime import datetime, timedelta
 
 
 class RelatedPartyIdFinder(object):
@@ -40,3 +41,17 @@ class RelatedPartyIdFinder(object):
         newestPartyId = self.__search_end_party_id(self.party_id_to_new, partyId)
 
         return oldestPartyId, newestPartyId
+
+
+def parse_time_range(extract_date, from_date, to_date):
+    if extract_date is not None:
+        extract_date = datetime.strptime(extract_date, '%Y-%m-%d')
+        from_time = extract_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        to_time = from_time + timedelta(days=1)
+    elif from_date is not None and to_date is not None:
+        from_time = datetime.strptime(from_date, '%Y-%m-%d')
+        to_time = datetime.strptime(to_date, '%Y-%m-%d')
+    else:
+        raise ValueError('extract_date or from_date/to_date required.')
+
+    return from_time, to_time

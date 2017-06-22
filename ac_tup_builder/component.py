@@ -46,14 +46,18 @@ class TupBuilder(object):
             self.tupRecordService = tupRecordService
 
     def build(self):
+        row_count = 0
         try:
             while True:
                 dataContext = self.dataSource.next()
                 if dataContext is None:
                     break
 
+                row_count = row_count + 1
                 self.tagsBuilder.build_tags(dataContext, self.tupRecordService)
 
             self.tupRecordService.flush()
         finally:
             self.dataSource.close()
+
+        return row_count
