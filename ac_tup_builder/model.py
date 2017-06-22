@@ -1,6 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, BigInteger, String, Integer, DateTime, Boolean, desc, orm
-from sqlalchemy.orm import session
 from abc import abstractmethod
 from datetime import datetime
 import json
@@ -19,7 +18,7 @@ class AbstractTupRecord(object):
     crtTime = Column(DateTime, nullable=False)
     updTime = Column(DateTime, nullable=False)
 
-    oldTags = dict()
+    historyRecs = None
 
     tupDataObject = None
     tagNamePrefix = None
@@ -71,13 +70,53 @@ class AbstractTupRecord(object):
         except KeyError:
             old_value = None
 
-        if old_value is not None:
-            if old_value == value:
-                return
-            else:
-                dpath.util.new(self.oldTags, tagName, old_value, separator='.')
+        if old_value is None or old_value != value:
+            if self.historyRecs is None:
+                self.historyRecs = dict()
+
+            self.historyRecs[tagName] = [old_value, value]
 
         dpath.util.new(self.tupDataObject, tagName, value, separator='.')
+
+
+class TupHistoryRecord(Base):
+    __tablename__ = 'TupHistoryRecord'
+
+    idTupHistoryRecord = Column(String, primary_key=True, autoincrement=True)
+    gpartyId = Column(String, nullable=False)
+    tagName = Column(String, nullable=False)
+    oldValue = Column(String, nullable=True)
+    newValue = Column(String, nullable=False)
+    crtTime = Column(DateTime, nullable=False)
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def _convertToValueObject(cls, value):
+        if value is None:
+            return None
+
+        return json.loads(value, object_hook=json_util.object_hook_ts_str)
+
+    @classmethod
+    def _convertFromValueObject(cls, valueObject):
+        if valueObject is None:
+            return None
+
+        return json.dumps(valueObject, default=json_util.default_ts_str)
+
+    def getOldValueObject(self):
+        return self._convertToValueObject(self.oldValue)
+
+    def setOldValueObject(self, oldValueObj):
+        self.oldValue = self._convertFromValueObject(oldValueObj)
+
+    def getNewValueObject(self):
+        return self._convertToValueObject(self.newValue)
+
+    def setNewValueObject(self, newValueObj):
+        self.newValue = self._convertFromValueObject(newValueObj)
 
 
 class TagNamePrefixes:
@@ -234,6 +273,20 @@ class SqlTupRecordStorage(TupRecordStorage):
         with session_scope() as session:
             tupRec.dump_tup_data()
             session.add(tupRec)
+
+            if tupRec.historyRecs is not None:
+                tup_history_recs = []
+                for tagName, values in tupRec.historyRecs.items():
+                    tup_history_rec = TupHistoryRecord()
+                    tup_history_rec.gpartyId = tupRec.gpartyId
+                    tup_history_rec.tagName = tagName
+                    tup_history_rec.crtTime = tupRec.updTime
+                    tup_history_rec.setOldValueObject(values[0])
+                    tup_history_rec.setNewValueObject(values[1])
+
+                    tup_history_recs.append(tup_history_rec)
+
+                session.bulk_save_objects(tup_history_recs)
 
     def query(self, tagNamePrefix:str, gpartyId:str, lastPartyId:str=None):
         with session_scope() as session:

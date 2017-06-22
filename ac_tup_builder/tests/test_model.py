@@ -2,7 +2,7 @@ from unittest import TestCase
 from ti_config import bootstrap
 from ti_daf import SqlTemplate, TxMode
 from ti_daf.sql_tx import session_scope
-from ac_tup_builder.model import Base, PopulationTupRecord
+from ac_tup_builder.model import Base, PopulationTupRecord, TupHistoryRecord
 from datetime import datetime
 
 
@@ -43,3 +43,13 @@ class TestPopulationTupRecord(TestCase):
             session.add(popTupRec)
 
             print(session.query(PopulationTupRecord).filter(PopulationTupRecord.gpartyId=='1234').first())
+
+        with session_scope() as session:
+            history_rec = TupHistoryRecord()
+            history_rec.setNewValueObject("123")
+            history_rec.setOldValueObject("321")
+            self.assertEquals("123", history_rec.getNewValueObject())
+            self.assertEquals("321", history_rec.getOldValueObject())
+
+            history_rec.setOldValueObject(datetime.strptime('2017-06-10', '%Y-%m-%d'))
+            self.assertEquals('2017-06-10', history_rec.getOldValueObject().strftime('%Y-%m-%d'))
