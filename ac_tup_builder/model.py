@@ -82,7 +82,7 @@ class AbstractTupRecord(object):
 class TupHistoryRecord(Base):
     __tablename__ = 'TupHistoryRecord'
 
-    idTupHistoryRecord = Column(String, primary_key=True, autoincrement=True)
+    idTupHistoryRecord = Column(BigInteger, primary_key=True, autoincrement=True)
     gpartyId = Column(String, nullable=False)
     tagName = Column(String, nullable=False)
     oldValue = Column(String, nullable=True)

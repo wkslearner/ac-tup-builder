@@ -1,5 +1,7 @@
 from ac_tup_builder.component import DataSource, TupBuilder, CompositeTagsBuilder
+from ac_tup_builder.config import init_app
 from ac_tup_builder.context import SqlAlchemyRowDataContext, DataContext
+from ac_tup_builder.tags_builder.credit.base_credit import CreditTagsBuilder
 from ac_tup_builder.tags_builder.population.base import GenderTagsBuilder
 from ti_daf import SqlTemplate
 import sqlalchemy as sa
@@ -56,12 +58,16 @@ def build_by_org_party(extract_date=None, from_date=None, to_date=None):
     ds = OrgPartyDataSource(from_time=from_time, to_time=to_time)
 
     tags_builders = list()
+    tags_builders.append(CreditTagsBuilder())
     tags_builders.append(GenderTagsBuilder())
     tags_builder = CompositeTagsBuilder(tags_builders)
-
     tup_builder = TupBuilder(ds, tags_builder)
     row_count = tup_builder.build()
 
     logger.info('Finish to build tup by OrgParty, fromTime=[%s], toTime=[%s], rowCount=[%s].'%(from_time, to_time, row_count))
 
     return row_count
+
+def execute():
+    init_app()
+    build_by_org_party('2017-07-14', '2014-07-14', '2017-08-04')
