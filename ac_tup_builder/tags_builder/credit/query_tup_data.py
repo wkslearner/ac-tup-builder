@@ -444,7 +444,7 @@ def query_number_of_otheraccessreason(partyId):
 def query_score_of_zmxycredit(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                  from ac_ccis_db.ZmxyReport zmxy 
+                  from bi_data_db.ZmxyReport zmxy 
                   WHERE zmxy.partyId = :partyId
                   order by zmxy.idZmxyReport desc
                     '''
@@ -464,7 +464,7 @@ def query_score_of_zmxycredit(partyId):
 def query_overdue_of_zmxywatchlist(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                  from ac_ccis_db.ZmxyWatchListReport zmxy
+                  from bi_data_db.ZmxyWatchListReport zmxy
                   WHERE zmxy.partyId = :partyId
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
@@ -487,7 +487,7 @@ def query_overdue_of_zmxywatchlist(partyId):
 def query_score_of_zmxyantifruadlist(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                      from ac_ccis_db.ZmxyAntifraudScoreReport zmxy 
+                      from bi_data_db.ZmxyAntifraudScoreReport zmxy 
                       WHERE zmxy.partyId = :partyId
                       order by zmxy.idZmxyWatchListReport desc
                         '''
