@@ -10,9 +10,7 @@ from ac_tup_builder.config import init_app
 # 查询信用历史长度
 def query_length_of_history(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    SqlTemplate.get_table_meta_data('PCRCardCreditRecord','/db/mysql/ac_ccis_db')
-    SqlTemplate.get_table_meta_data('PCRLoanRecord', '/db/mysql/ac_ccis_db')
-    SqlTemplate.get_table_meta_data('PCRBasicInfo', '/db/mysql/ac_ccis_db')
+
     sql_text = '''select MIN(acard.opendate) MinTime, MIN(aload.loanDate) MinloanTime, acard.creditId, maxid.partyId
                   from (
 	                  SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
@@ -24,7 +22,7 @@ def query_length_of_history(partyId):
                   and maxid.partyId = :partyId
                   GROUP BY acard.creditId, aload.creditId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
     now = datetime.date.today()
     result = []
     for row in row_list:
@@ -444,7 +442,7 @@ def query_number_of_otheraccessreason(partyId):
 
 # 芝麻信用分
 def query_score_of_zmxycredit(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_bigdata_db')
     sql_text = '''SELECT zmxy.data 
                   from ac_ccis_db.ZmxyReport zmxy 
                   WHERE zmxy.partyId = :partyId
@@ -464,7 +462,7 @@ def query_score_of_zmxycredit(partyId):
 
 # 芝麻信用行业关注名单当前逾期笔数
 def query_overdue_of_zmxywatchlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_bigdata_db')
     sql_text = '''SELECT zmxy.data 
                   from ac_ccis_db.ZmxyWatchListReport zmxy
                   WHERE zmxy.partyId = :partyId
@@ -487,7 +485,7 @@ def query_overdue_of_zmxywatchlist(partyId):
 
 # 芝麻反欺诈分
 def query_score_of_zmxyantifruadlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_bigdata_db')
     sql_text = '''SELECT zmxy.data 
                       from ac_ccis_db.ZmxyAntifraudScoreReport zmxy 
                       WHERE zmxy.partyId = :partyId

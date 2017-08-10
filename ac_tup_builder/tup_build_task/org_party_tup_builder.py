@@ -59,7 +59,6 @@ def build_by_org_party(extract_date=None, from_date=None, to_date=None):
 
     tags_builders = list()
     tags_builders.append(CreditTagsBuilder())
-    tags_builders.append(GenderTagsBuilder())
     tags_builder = CompositeTagsBuilder(tags_builders)
     tup_builder = TupBuilder(ds, tags_builder)
     row_count = tup_builder.build()
@@ -71,3 +70,5 @@ def build_by_org_party(extract_date=None, from_date=None, to_date=None):
 def execute():
     init_app()
     build_by_org_party('2017-07-14', '2014-07-14', '2017-08-04')
+
+execute()
