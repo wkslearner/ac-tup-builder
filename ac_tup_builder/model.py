@@ -12,7 +12,7 @@ Base = declarative_base()
 
 
 class AbstractTupRecord(object):
-    gpartyId = Column('qpartyid',String, primary_key=True, nullable=False)
+    gpartyId = Column('gpartyid',String, primary_key=True, nullable=False)
     lastPartyId = Column('lastpartyid',String, nullable=False)
     tupData = Column('tupdata',String, nullable=False)
     crtTime = Column('crttime',DateTime, nullable=False)
