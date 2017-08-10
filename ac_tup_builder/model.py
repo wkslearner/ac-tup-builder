@@ -12,11 +12,11 @@ Base = declarative_base()
 
 
 class AbstractTupRecord(object):
-    gpartyId = Column('gpartyid',String, primary_key=True, nullable=False)
-    lastPartyId = Column('lastpartyid',String, nullable=False)
-    tupData = Column('tupdata',String, nullable=False)
-    crtTime = Column('crttime',DateTime, nullable=False)
-    updTime = Column('updtime',DateTime, nullable=False)
+    gpartyId = Column('gpartyId',String, primary_key=True, nullable=False)
+    lastPartyId = Column('lastPartyId',String, nullable=False)
+    tupData = Column('tupData',String, nullable=False)
+    crtTime = Column('crtTime',DateTime, nullable=False)
+    updTime = Column('updTime',DateTime, nullable=False)
 
     historyRecs = None
 
@@ -177,7 +177,7 @@ class PreferenceTupRecord(AbstractTupRecord, Base):
 
 
 class CreditTupRecord(AbstractTupRecord, Base):
-    __tablename__ = 'credittuprecord'
+    __tablename__ = 'CreditTupRecord'
 
     @orm.reconstructor
     def __init_on_load(self):
