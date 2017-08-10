@@ -192,7 +192,7 @@ def query_total_loanamount_used(partyId):
     sql_text = ''' SELECT abasic.totalCreditLineUsed, MAX(abasic.id) id, abasic.partyId partyId
                    FROM ac_ccis_db.PCRBasicInfo abasic 
                    WHERE abasic.partyId = :partyId
-                   GROUP BY partyId
+                   GROUP BY partyId, totalCreditLineUsed
                 '''
 
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
