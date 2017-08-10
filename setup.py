@@ -20,9 +20,12 @@ setup(name='ac-tup-builder',
       zip_safe=False,
       test_suite='nose.collector',
       tests_require=['nose'],
-      scripts=[],
+      scripts=[
+            'bin/ac-tup-build'
+      ],
       entry_points = {
         'console_scripts': [],
+
       },
       include_package_data=True
       )
