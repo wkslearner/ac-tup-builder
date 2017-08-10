@@ -10,7 +10,9 @@ from ac_tup_builder.config import init_app
 # 查询信用历史长度
 def query_length_of_history(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-
+    SqlTemplate.get_table_meta_data('PCRCardCreditRecord','/db/mysql/ac_ccis_db')
+    SqlTemplate.get_table_meta_data('PCRLoanRecord', '/db/mysql/ac_ccis_db')
+    SqlTemplate.get_table_meta_data('PCRBasicInfo', '/db/mysql/ac_ccis_db')
     sql_text = '''select MIN(acard.opendate) MinTime, MIN(aload.loanDate) MinloanTime, acard.creditId, maxid.partyId
                   from (
 	                  SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
