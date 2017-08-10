@@ -156,7 +156,7 @@ def query_freq_of_loan(partyId):
     sql_text = ''' SELECT abasic.loanFreq loanFreq, MAX(abasic.id) id, abasic.partyId partyId
                     FROM ac_ccis_db.PCRBasicInfo abasic 
                     WHERE abasic.partyId = :partyId
-                    GROUP BY partyId
+                    GROUP BY partyId, loanFreq
                '''
 
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
