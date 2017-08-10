@@ -314,7 +314,7 @@ def query_number_of_everdelinquencyM3loan(partyId):
 # 临柜查询次数
 def query_number_of_countercheck(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
+    sql_text = '''SELECT count(apc.accessReason) sum, maxid.partyId FROM
 	              (
 		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
                   ) maxid, ac_ccis_db.PCRAccessRecord apc
@@ -322,7 +322,7 @@ def query_number_of_countercheck(partyId):
                   WHERE maxid.id = apc.creditId
                   AND apc.accessReason like "%临柜%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId, 
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
