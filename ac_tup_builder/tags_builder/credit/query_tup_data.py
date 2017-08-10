@@ -489,7 +489,7 @@ def query_score_of_zmxyantifruadlist(partyId):
     sql_text = '''SELECT zmxy.data 
                       from bi_data_db.ZmxyAntifraudScoreReport zmxy 
                       WHERE zmxy.partyId = :partyId
-                      order by zmxy.idZmxyWatchListReport desc
+                      order by zmxy.idZmxyAntifraudScoreReport desc
                         '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
 
