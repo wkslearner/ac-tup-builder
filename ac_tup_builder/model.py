@@ -12,11 +12,11 @@ Base = declarative_base()
 
 
 class AbstractTupRecord(object):
-    gpartyId = Column(String, primary_key=True, nullable=False)
-    lastPartyId = Column(String, nullable=False)
-    tupData = Column(String, nullable=False)
-    crtTime = Column(DateTime, nullable=False)
-    updTime = Column(DateTime, nullable=False)
+    gpartyId = Column('qpartyid',String, primary_key=True, nullable=False)
+    lastPartyId = Column('lastpartyid',String, nullable=False)
+    tupData = Column('tupdata',String, nullable=False)
+    crtTime = Column('crttime',DateTime, nullable=False)
+    updTime = Column('updtime',DateTime, nullable=False)
 
     historyRecs = None
 
@@ -83,11 +83,11 @@ class TupHistoryRecord(Base):
     __tablename__ = 'TupHistoryRecord'
 
     idTupHistoryRecord = Column(BigInteger, primary_key=True, autoincrement=True)
-    gpartyId = Column(String, nullable=False)
-    tagName = Column(String, nullable=False)
-    oldValue = Column(String, nullable=True)
-    newValue = Column(String, nullable=False)
-    crtTime = Column(DateTime, nullable=False)
+    gpartyId = Column('gpartyid',String, nullable=False)
+    tagName = Column('tagname',String, nullable=False)
+    oldValue = Column('oldvalue',String, nullable=True)
+    newValue = Column('newvalue',String, nullable=False)
+    crtTime = Column('crttime',DateTime, nullable=False)
 
     def __init__(self):
         pass
