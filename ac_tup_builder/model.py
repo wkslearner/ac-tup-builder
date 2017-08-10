@@ -80,7 +80,7 @@ class AbstractTupRecord(object):
 
 
 class TupHistoryRecord(Base):
-    __tablename__ = 'TupHistoryRecord'
+    __tablename__ = 'tuphistoryrecord'
 
     idTupHistoryRecord = Column(BigInteger, primary_key=True, autoincrement=True)
     gpartyId = Column('gpartyid',String, nullable=False)
@@ -177,7 +177,7 @@ class PreferenceTupRecord(AbstractTupRecord, Base):
 
 
 class CreditTupRecord(AbstractTupRecord, Base):
-    __tablename__ = 'CreditTupRecord'
+    __tablename__ = 'credittuprecord'
 
     @orm.reconstructor
     def __init_on_load(self):
