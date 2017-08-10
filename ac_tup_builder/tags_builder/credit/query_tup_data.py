@@ -343,7 +343,7 @@ def query_number_of_onlinecheck(partyId):
                   WHERE maxid.id = apc.creditId
                   AND apc.accessReason like "%互联网个人信用信息服务平台%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId,apc.accessReason
                     '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
@@ -364,7 +364,7 @@ def query_number_of_creditcardapply(partyId):
                   WHERE maxid.id = apc.creditId
                   AND apc.accessReason like "%信用卡审批%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId,apc.accessReason
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
@@ -385,7 +385,7 @@ def query_number_of_loanapply(partyId):
                   WHERE maxid.id = apc.creditId
                   AND apc.accessReason like "%贷款审批%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId,apc.accessReason
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
@@ -406,7 +406,7 @@ def query_number_of_postloan(partyId):
                   WHERE maxid.id = apc.creditId
                   AND apc.accessReason like "%贷后管理%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId,apc.accessReason
             '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
@@ -430,7 +430,7 @@ def query_number_of_otheraccessreason(partyId):
                   AND apc.accessReason not like "%贷后管理%"
                   AND apc.accessReason not like "%本人查询%"
                   AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
+                  GROUP BY maxid.partyId,apc.accessReason
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
