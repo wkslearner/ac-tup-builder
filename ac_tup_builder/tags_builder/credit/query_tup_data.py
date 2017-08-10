@@ -40,7 +40,7 @@ def query_number_of_creditcard(partyId):
     sql_text = '''SELECT creditCardNum FROM ac_ccis_db.PCRBasicInfo apc
                   WHERE apc.partyId = :partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -64,7 +64,7 @@ def query_number_of_CNYcreditcard(partyId):
                   GROUP BY creditId
                '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -89,7 +89,7 @@ def query_number_of_uncanceledCNYcreditcard(partyId):
                   GROUP BY creditId
             '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -115,7 +115,7 @@ def query_number_of_total_crditline(partyId):
                   GROUP BY creditId
                 '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -141,7 +141,7 @@ def query_number_of_total_crditline_used(partyId):
                   GROUP BY creditId
                 '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -159,7 +159,7 @@ def query_freq_of_loan(partyId):
                     GROUP BY partyId
                '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -177,7 +177,7 @@ def query_total_loanamount(partyId):
                     GROUP BY partyId
                    '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -195,7 +195,7 @@ def query_total_loanamount_used(partyId):
                    GROUP BY partyId
                 '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -217,7 +217,7 @@ def query_number_of_creditcardbaddebts(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
               '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -239,7 +239,7 @@ def query_overdue_of_creditcard(partyId):
                       AND maxid.partyId = :partyId
                       GROUP BY maxid.partyId
                   '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -261,7 +261,7 @@ def query_overdue_of_loan(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                       '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -282,7 +282,7 @@ def query_number_of_everdelinquencyM3creditcard(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                           '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -303,7 +303,7 @@ def query_number_of_everdelinquencyM3loan(partyId):
                       AND maxid.partyId = :partyId
                       GROUP BY maxid.partyId
                               '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -324,7 +324,7 @@ def query_number_of_countercheck(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -345,7 +345,7 @@ def query_number_of_onlinecheck(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                     '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -366,7 +366,7 @@ def query_number_of_creditcardapply(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -387,7 +387,7 @@ def query_number_of_loanapply(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -408,7 +408,7 @@ def query_number_of_postloan(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
             '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -432,7 +432,7 @@ def query_number_of_otheraccessreason(partyId):
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -448,7 +448,7 @@ def query_score_of_zmxycredit(partyId):
                   WHERE zmxy.partyId = :partyId
                   order by zmxy.idZmxyReport desc
                     '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/bi_bigdata_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -467,7 +467,7 @@ def query_overdue_of_zmxywatchlist(partyId):
                   from ac_ccis_db.ZmxyWatchListReport zmxy
                   WHERE zmxy.partyId = :partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_bigdata_db',max_size=-1)
 
     count_result_ture = 0
     count_result_false = 0
@@ -491,7 +491,7 @@ def query_score_of_zmxyantifruadlist(partyId):
                       WHERE zmxy.partyId = :partyId
                       order by zmxy.idZmxyWatchListReport desc
                         '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_bigdata_db',max_size=-1)
 
     result = []
     for row in row_list:
