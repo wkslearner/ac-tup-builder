@@ -80,7 +80,7 @@ class AbstractTupRecord(object):
 
 
 class TupHistoryRecord(Base):
-    __tablename__ = 'tuphistoryrecord'
+    __tablename__ = 'TupHistoryRecord'
 
     idTupHistoryRecord = Column(BigInteger, primary_key=True, autoincrement=True)
     gpartyId = Column('gpartyid',String, nullable=False)
