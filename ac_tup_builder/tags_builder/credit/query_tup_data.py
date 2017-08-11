@@ -8,7 +8,7 @@ from ti_util import json_util
 from ac_tup_builder.config import init_app
 
 def get_max_count():
-    return bootstrap.ti_config_service.get_value('query_max_size')
+    return int(bootstrap.ti_config_service.get_value('query_max_size'))
 
 # 查询信用历史长度
 def query_length_of_history(partyId):
