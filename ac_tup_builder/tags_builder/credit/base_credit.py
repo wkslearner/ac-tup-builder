@@ -54,7 +54,7 @@ class CreditTagsBuilder(TagsBuilder):
 
         # 信用卡额度使用率
         usage_of_crditLine = []
-        if number_total_crditLine != [] and number_total_crditLine_used != []:
+        if number_total_crditLine != [] and number_total_crditLine_used != [] and number_total_crditLine != 0:
             usage_of_crditLine = "%.2f%%" % ((100*number_total_crditLine_used) / number_total_crditLine)
         logger.info('Prepare to build tup by usage_of_crditLine=[%s], partyId=[%s]', usage_of_crditLine, partyId)
         tup_rec.set_tag('credit.pcr.usage_of_creditline', usage_of_crditLine)
@@ -87,7 +87,7 @@ class CreditTagsBuilder(TagsBuilder):
         else:
             overdue_of_creditcard = '1'
         logger.info('Prepare to build tup by card_result=[%s], partyId=[%s]', overdue_of_creditcard, partyId)
-        tup_rec.set_tag('credit.pcr.overdue_of_creditcard, partyId=[%s]', overdue_of_creditcard)
+        tup_rec.set_tag('credit.pcr.overdue_of_creditcard', overdue_of_creditcard)
 
         # 贷款是否当前逾期
         lean_result = query_overdue_of_loan(partyId)
