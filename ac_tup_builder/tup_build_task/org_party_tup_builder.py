@@ -24,6 +24,7 @@ class OrgPartyDataSource(DataSource):
                                 (Party.updTime>=:fromTime and Party.updTime<:toTime)
                             )
                         order by Party.updTime
+                        limit 0, 50
         '''
 
         sql_paras = dict()
