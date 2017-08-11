@@ -484,10 +484,11 @@ def query_overdue_of_zmxywatchlist(partyId):
         snapshot_data = json.loads(row[0], object_hook=json_util.object_hook_ts_str)
 
         if 'details' in snapshot_data.keys():
-            if snapshot_data['details'][0]['settlement'] == True:
-                count_result_ture = count_result_ture + 1
-            elif snapshot_data['details'][0]['settlement'] == False:
-                count_result_false = count_result_false + 1
+            if 'settlement' in snapshot_data['details'][0].keys():
+                if snapshot_data['details'][0]['settlement'] == True:
+                    count_result_ture = count_result_ture + 1
+                elif snapshot_data['details'][0]['settlement'] == False:
+                    count_result_false = count_result_false + 1
 
     return count_result_false, count_result_ture
 
