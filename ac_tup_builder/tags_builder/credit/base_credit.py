@@ -142,7 +142,7 @@ class CreditTagsBuilder(TagsBuilder):
 
         # 其它类型审批次数
         logger.info('Prepare to build tup by number_of_otheraccessreason=[%s], partyId=[%s]', number_query_creditcardapply[5], partyId)
-        tup_rec.set_tag('credit.pcr.number_of_otheraccessreason', number_query_creditcardapply[6])
+        tup_rec.set_tag('credit.pcr.number_of_otheraccessreason', number_query_creditcardapply[5])
 
         # 芝麻信用
         score_of_zmxycredit = query_score_of_zmxycredit(partyId)
