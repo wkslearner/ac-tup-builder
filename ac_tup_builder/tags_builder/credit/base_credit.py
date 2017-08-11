@@ -8,9 +8,8 @@ from ac_tup_builder.tags_builder.credit.query_tup_data import query_number_of_cr
     query_number_of_uncanceledCNYcreditcard, query_number_of_CNYcreditcard, query_number_of_total_crditline, \
     query_number_of_total_crditline_used, query_freq_of_loan, query_total_loanamount, query_total_loanamount_used, \
     query_number_of_creditcardbaddebts, query_overdue_of_creditcard, query_overdue_of_loan, \
-    query_number_of_everdelinquencyM3creditcard, query_number_of_everdelinquencyM3loan, query_number_of_countercheck, \
-    query_number_of_onlinecheck, query_number_of_creditcardapply, query_number_of_loanapply, query_number_of_postloan, \
-    query_number_of_otheraccessreason, query_score_of_zmxycredit, query_score_of_zmxyantifruadlist, \
+    query_number_of_everdelinquencyM3creditcard, query_number_of_everdelinquencyM3loan, \
+     query_score_of_zmxycredit, query_score_of_zmxyantifruadlist, \
     query_overdue_of_zmxywatchlist, query_creditcardapply
 
 
