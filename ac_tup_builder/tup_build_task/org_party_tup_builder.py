@@ -70,6 +70,6 @@ def build_by_org_party(extract_date=None, from_date=None, to_date=None):
 
 def execute():
     init_app()
-    build_by_org_party(None, '2014-07-14', '2017-08-04')
+    build_by_org_party(None, '2017-07-14', '2017-07-15')
 
 #execute()
