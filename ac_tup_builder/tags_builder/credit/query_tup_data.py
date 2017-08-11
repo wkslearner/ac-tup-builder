@@ -320,134 +320,45 @@ def query_number_of_everdelinquencyM3loan(partyId):
 
     return result
 
-# 临柜查询次数
-def query_number_of_countercheck(partyId):
+# 信用卡审批
+def query_creditcardapply(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
-	              (
-		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  ) maxid, ac_ccis_db.PCRAccessRecord apc
-
-                  WHERE maxid.id = apc.creditId
-                  AND apc.accessReason like "%临柜%"
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId, apc.accessReason
-                '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-
-# 互联网个人查询次数
-def query_number_of_onlinecheck(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
-    	              (
-    		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      ) maxid, ac_ccis_db.PCRAccessRecord apc
-
-                  WHERE maxid.id = apc.creditId
-                  AND apc.accessReason like "%互联网个人信用信息服务平台%"
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId,apc.accessReason
-                    '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-
-# 信用卡审批次数
-def query_number_of_creditcardapply(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
+    sql_text = '''SELECT apc.accessReason, maxid.partyId FROM
         	            (
         		          SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
                         ) maxid, ac_ccis_db.PCRAccessRecord apc
-
                   WHERE maxid.id = apc.creditId
-                  AND apc.accessReason like "%信用卡审批%"
                   AND maxid.partyId = :partyId
                   GROUP BY maxid.partyId,apc.accessReason
                 '''
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
-    result = []
+    number_of_countercheck = 0
+    number_of_onlinecheck = 0
+    number_of_creditcardapply = 0
+    number_of_loanapply = 0
+    number_of_postloan = 0
+    number_of_otheraccessreason = 0
+
     for row in row_list:
-        result = row[0]
+        if "临柜" in row[0]:
+            number_of_countercheck = number_of_countercheck + 1
+        elif "互联网个人信用信息服务平台" in row[0]:
+            number_of_onlinecheck = number_of_onlinecheck + 1
+        elif "信用卡审批" in row[0]:
+            number_of_creditcardapply = number_of_creditcardapply + 1
+        elif "贷款审批" in row[0]:
+            number_of_loanapply = number_of_loanapply + 1
+        elif "贷后管理" in row[0]:
+            number_of_postloan = number_of_postloan + 1
+        elif "本人查询" in row[0]:
+            pass
+        else:
+            number_of_otheraccessreason = number_of_otheraccessreason + 1
 
-    return result
 
-# 贷款审批次数
-def query_number_of_loanapply(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
-            	        (
-            		      SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                        ) maxid, ac_ccis_db.PCRAccessRecord apc
-
-                  WHERE maxid.id = apc.creditId
-                  AND apc.accessReason like "%贷款审批%"
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId,apc.accessReason
-                '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-
-# 贷后管理次数
-def query_number_of_postloan(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
-                	    (
-                		  SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                        ) maxid, ac_ccis_db.PCRAccessRecord apc
-
-                  WHERE maxid.id = apc.creditId
-                  AND apc.accessReason like "%贷后管理%"
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId,apc.accessReason
-            '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-
-# 其他类型审批次数
-def query_number_of_otheraccessreason(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.accessReason) sum,apc.accessReason, maxid.partyId FROM
-                      (
-                    	SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      ) maxid, ac_ccis_db.PCRAccessRecord apc
-
-                  WHERE maxid.id = apc.creditId
-                  AND apc.accessReason not like "%信用卡审批%"
-                  AND apc.accessReason not like "%贷款审批%"
-                  AND apc.accessReason not like "%贷后管理%"
-                  AND apc.accessReason not like "%本人查询%"
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId,apc.accessReason
-                '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
+    return number_of_countercheck,number_of_onlinecheck,number_of_creditcardapply, number_of_loanapply, \
+           number_of_postloan, number_of_otheraccessreason
 
 # 芝麻信用分
 def query_score_of_zmxycredit(partyId):
@@ -513,4 +424,5 @@ def query_score_of_zmxyantifruadlist(partyId):
     return result
 
 #init_app()
-#data =  query_length_of_history('1012222000004361')
+#data =  query_creditcardapply('1012222000004361')
+#print(data[0])

@@ -11,7 +11,8 @@ from ac_tup_builder.tags_builder.credit.query_tup_data import query_number_of_cr
     query_number_of_everdelinquencyM3creditcard, query_number_of_everdelinquencyM3loan, query_number_of_countercheck, \
     query_number_of_onlinecheck, query_number_of_creditcardapply, query_number_of_loanapply, query_number_of_postloan, \
     query_number_of_otheraccessreason, query_score_of_zmxycredit, query_score_of_zmxyantifruadlist, \
-    query_overdue_of_zmxywatchlist
+    query_overdue_of_zmxywatchlist, query_creditcardapply
+
 
 class CreditTagsBuilder(TagsBuilder):
     def __init__(self):
@@ -118,35 +119,31 @@ class CreditTagsBuilder(TagsBuilder):
         logger.info('Prepare to build tup by over_loan_result=[%s], partyId=[%s]', number_of_exceedloan, partyId)
         tup_rec.set_tag('credit.pcr.number_of_everdelinquencyM3loan', number_of_exceedloan)
 
+        number_query_creditcardapply = query_creditcardapply(partyId)
+
         # 临柜查询次数
-        number_of_countercheck = query_number_of_countercheck(partyId)
-        logger.info('Prepare to build tup by number_of_countercheck=[%s], partyId=[%s]', number_of_countercheck, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_countercheck', number_of_countercheck)
+        logger.info('Prepare to build tup by number_of_countercheck=[%s], partyId=[%s]', number_query_creditcardapply[0], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_countercheck', number_query_creditcardapply[0])
 
         # 互联网个人查询次数
-        number_of_onlinecheck = query_number_of_onlinecheck(partyId)
-        logger.info('Prepare to build tup by number_of_onlinecheck=[%s], partyId=[%s]', number_of_onlinecheck, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_onlinecheck', number_of_onlinecheck)
+        logger.info('Prepare to build tup by number_of_onlinecheck=[%s], partyId=[%s]', number_query_creditcardapply[1], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_onlinecheck', number_query_creditcardapply[1])
 
         # 信用卡审批次数
-        number_of_creditcardapply = query_number_of_creditcardapply(partyId)
-        logger.info('Prepare to build tup by number_of_creditcardapply=[%s], partyId=[%s]', number_of_creditcardapply, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_creditcardapply', number_of_creditcardapply)
+        logger.info('Prepare to build tup by number_of_creditcardapply=[%s], partyId=[%s]', number_query_creditcardapply[2], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_creditcardapply', number_query_creditcardapply[2])
 
         # 贷款审批次数
-        number_of_loanapply = query_number_of_loanapply(partyId)
-        logger.info('Prepare to build tup by number_of_loanapply=[%s], partyId=[%s]', number_of_loanapply, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_loanapply', number_of_loanapply)
+        logger.info('Prepare to build tup by number_of_loanapply=[%s], partyId=[%s]', number_query_creditcardapply[3], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_loanapply', number_query_creditcardapply[3])
 
         # 贷后管理次数
-        number_of_postloan = query_number_of_postloan(partyId)
-        logger.info('Prepare to build tup by number_of_postloan=[%s], partyId=[%s]', number_of_postloan, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_postloan', number_of_postloan)
+        logger.info('Prepare to build tup by number_of_postloan=[%s], partyId=[%s]', number_query_creditcardapply[4], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_postloan', number_query_creditcardapply[1])
 
         # 其它类型审批次数
-        number_of_otheraccessreason = query_number_of_otheraccessreason(partyId)
-        logger.info('Prepare to build tup by number_of_otheraccessreason=[%s], partyId=[%s]', number_of_otheraccessreason, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_otheraccessreason', number_of_otheraccessreason)
+        logger.info('Prepare to build tup by number_of_otheraccessreason=[%s], partyId=[%s]', number_query_creditcardapply[5], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_otheraccessreason', number_query_creditcardapply[6])
 
         # 芝麻信用
         score_of_zmxycredit = query_score_of_zmxycredit(partyId)
