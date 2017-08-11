@@ -34,7 +34,7 @@ class CreditTagsBuilder(TagsBuilder):
 
         # 人民币信用卡张数
         number_CNYcreditcard = query_number_of_CNYcreditcard(partyId)
-        logger.info('Prepare to build tup by number_CNYcreditcard=[%s]')
+        logger.info('Prepare to build tup by number_CNYcreditcard=[%s]', number_CNYcreditcard)
         tup_rec.set_tag('credit.pcr.number_of_CNYcreditcard', number_CNYcreditcard)
 
         # 未销户人民币信用卡张数
