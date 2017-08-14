@@ -20,8 +20,4 @@ def init_app():
     :return:
     """
     bootstrap.init_ti_srv_cfg('ac-tup-builder', ti_config_home=ti_config_home())
-    SqlTemplate.set_default_ns_server_id('/db/mysql/ac-tup-builder')
-
-aa = "sss"
-if isinstance(aa,(str)):
-    print(aa)
+    SqlTemplate.set_default_ns_server_id('/db/oracle/dev_dw_db')
