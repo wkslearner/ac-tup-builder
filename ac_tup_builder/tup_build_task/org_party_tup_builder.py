@@ -9,7 +9,8 @@ import sqlalchemy as sa
 from ac_tup_builder.util import RelatedPartyIdFinder
 import logging
 from ac_tup_builder.util import parse_time_range
-import time, sys
+import sys
+from datetime import datetime
 
 
 class OrgPartyDataSource(DataSource):
@@ -75,6 +76,6 @@ def execute():
         return
 
     query_day = sys.argv[1]
-    now_time = time.strftime('%Y-%m-%d',query_day)
+    now_time = datetime.strftime(query_day, '%Y-%m-%d')
 
     build_by_org_party(now_time, '2015-10-24', '2015-10-25')
