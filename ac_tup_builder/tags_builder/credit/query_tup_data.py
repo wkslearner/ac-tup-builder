@@ -160,7 +160,7 @@ def query_overdue_of_creditcard(maxId):
 # 贷款是否当前逾期
 def query_overdue_of_loan(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT sum(apc.amountOverdued) FROM
+    sql_text = '''SELECT sum(apc.amountOverdued) number FROM
 	               ac_ccis_db.PCRLoanRecord apc
 
                   WHERE apc.creditId = :maxId

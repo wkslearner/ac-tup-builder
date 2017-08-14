@@ -91,9 +91,9 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.overdue_of_creditcard', overdue_of_creditcard)
 
         # 贷款是否当前逾期
-        lean_result = query_overdue_of_loan(maxId)
+        lean_result = query_overdue_of_loan(partyId)
 
-        if lean_result == [] or lean_result == 0.00:
+        if lean_result == [] or lean_result == 0.00 or lean_result is None:
             overdue_of_loan = '0'
         else:
             overdue_of_loan = '1'

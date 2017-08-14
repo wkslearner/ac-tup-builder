@@ -23,6 +23,6 @@ def init_app():
 
 import datetime
 
-d1 = datetime.date(2012, 2, 2)
+d1 = datetime.date(2004, 11, 1)
 d2 = datetime.date(2017, 8, 14)
 print((d1 - d2).days)
