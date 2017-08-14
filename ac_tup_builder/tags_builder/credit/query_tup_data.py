@@ -33,24 +33,6 @@ def query_length_of_history(maxId):
 
     return str(result)
 
-'''
-# 查询信用卡张数  不用
-def query_number_of_creditcard(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = SELECT creditCardNum FROM ac_ccis_db.PCRBasicInfo apc
-                  WHERE apc.partyId = :partyId
-                  
-                
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-'''
-
-
 # 查询人民币信用卡张数
 def query_number_of_CNYcreditcard(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')

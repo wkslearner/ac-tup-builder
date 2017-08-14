@@ -1,3 +1,5 @@
+import time
+
 from pkg_resources import resource_filename
 from sqlalchemy.sql.functions import now
 from ti_config import bootstrap
@@ -20,9 +22,3 @@ def init_app():
     bootstrap.init_ti_srv_cfg('ac-tup-builder', ti_config_home=ti_config_home())
     SqlTemplate.set_default_ns_server_id('/db/oracle/dev_dw_db')
 
-
-import datetime
-
-d1 = datetime.date(2004, 11, 1)
-d2 = datetime.date(2017, 8, 14)
-print((d1 - d2).days)
