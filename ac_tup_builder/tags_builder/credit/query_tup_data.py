@@ -308,4 +308,3 @@ def query_score_of_zmxyantifruadlist(partyId):
             break
 
     return result
-

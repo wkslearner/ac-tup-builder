@@ -44,12 +44,12 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.number_of_uncaneledCNYcreditcard', number_CNYcreditcard[1])
 
         # 信用卡额度总和
-        number_total_crditLine = query_number_of_total_crditline(partyId)
+        number_total_crditLine = query_number_of_total_crditline(maxId)
         logger.info('Prepare to build tup by number_total_crditLine=[%s], partyId=[%s]', number_total_crditLine, partyId)
         tup_rec.set_tag('credit.pcr.total_crditLine', number_total_crditLine)
 
         # 信用卡已用额度总和
-        number_total_crditLine_used = query_number_of_total_crditline_used(partyId)
+        number_total_crditLine_used = query_number_of_total_crditline_used(maxId)
         logger.info('Prepare to build tup by number_total_crditLine_used=[%s], partyId=[%s]', number_total_crditLine_used, partyId)
         tup_rec.set_tag('credit.pcr.total_creditline_used', number_total_crditLine_used)
 
@@ -76,13 +76,13 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.total_Loanamount_used', total_loanamount_used)
 
         # 呆账信用卡数
-        number_of_creditcardbadebts = query_number_of_creditcardbaddebts(partyId)
+        number_of_creditcardbadebts = query_number_of_creditcardbaddebts(maxId)
         logger.info('Prepare to build tup by number_of_creditcardbadebts=[%s], partyId=[%s]', number_of_creditcardbadebts, partyId)
         tup_rec.set_tag('credit.pcr.number_of_creditcardbaddebts', number_of_creditcardbadebts)
 
         # 信用卡是否当前逾期
 
-        card_result = query_overdue_of_creditcard(partyId)
+        card_result = query_overdue_of_creditcard(maxId)
         if card_result == []:
             overdue_of_creditcard = '0'
         else:
@@ -91,7 +91,7 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.overdue_of_creditcard', overdue_of_creditcard)
 
         # 贷款是否当前逾期
-        lean_result = query_overdue_of_loan(partyId)
+        lean_result = query_overdue_of_loan(maxId)
 
         if lean_result == [] or lean_result == 0.00:
             overdue_of_loan = '0'
