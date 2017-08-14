@@ -4,9 +4,9 @@ from ac_tup_builder.component import TagsBuilder
 from ac_tup_builder.context import TupRecordService, DataContext
 from ac_tup_builder.model import TagNamePrefixes
 from ac_tup_builder.tags_builder.credit import query_tup_data
-from ac_tup_builder.tags_builder.credit.query_tup_data import query_number_of_creditcard, \
-    query_number_of_uncanceledCNYcreditcard, query_number_of_CNYcreditcard, query_number_of_total_crditline, \
-    query_number_of_total_crditline_used, query_freq_of_loan, query_total_loanamount, query_total_loanamount_used, \
+from ac_tup_builder.tags_builder.credit.query_tup_data import  \
+     query_number_of_CNYcreditcard, query_number_of_total_crditline, \
+    query_number_of_total_crditline_used, \
     query_number_of_creditcardbaddebts, query_overdue_of_creditcard, query_overdue_of_loan, \
     query_number_of_everdelinquencyM3creditcard, query_number_of_everdelinquencyM3loan, \
      query_score_of_zmxycredit, query_score_of_zmxyantifruadlist, \
@@ -21,26 +21,27 @@ class CreditTagsBuilder(TagsBuilder):
         logger = logging.getLogger(__name__)
         tup_rec = tupRecordService.get_tup_record(TagNamePrefixes.CREDIT, dataContext.get_value('gpartyId'))
         partyId = dataContext.get_value('partyId')
+        maxId = dataContext.get_value('id')
+
 
         # 信用历史长度
-        days = query_tup_data.query_length_of_history(partyId)
+        days = query_tup_data.query_length_of_history(maxId)
         logger.info('Prepare to build tup by length_of_history=[%s], partyId=[%s]', days, partyId)
         tup_rec.set_tag('credit.pcr.length_of_history', days)
 
         # 信用卡张数
-        number_creditcard = query_number_of_creditcard(partyId)
+        number_creditcard = dataContext.get_value('creditCardNum')
         logger.info('Prepare to build tup by number_creditcard=[%s], partyId=[%s]', number_creditcard, partyId)
         tup_rec.set_tag('credit.pcr.number_of_creditcard', number_creditcard)
 
         # 人民币信用卡张数
-        number_CNYcreditcard = query_number_of_CNYcreditcard(partyId)
-        logger.info('Prepare to build tup by number_CNYcreditcard=[%s], partyId=[%s]', number_CNYcreditcard, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_CNYcreditcard', number_CNYcreditcard)
+        number_CNYcreditcard = query_number_of_CNYcreditcard(maxId)
+        logger.info('Prepare to build tup by number_CNYcreditcard=[%s], partyId=[%s]', number_CNYcreditcard[0], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_CNYcreditcard', number_CNYcreditcard[0])
 
         # 未销户人民币信用卡张数
-        number_uncanceledCNYcreditcard = query_number_of_uncanceledCNYcreditcard(partyId)
-        logger.info('Prepare to build tup by number_uncanceledCNYcreditcard=[%s], partyId=[%s]',number_uncanceledCNYcreditcard, partyId)
-        tup_rec.set_tag('credit.pcr.number_of_uncaneledCNYcreditcard', number_uncanceledCNYcreditcard)
+        logger.info('Prepare to build tup by number_uncanceledCNYcreditcard=[%s], partyId=[%s]',number_CNYcreditcard[1], partyId)
+        tup_rec.set_tag('credit.pcr.number_of_uncaneledCNYcreditcard', number_CNYcreditcard[1])
 
         # 信用卡额度总和
         number_total_crditLine = query_number_of_total_crditline(partyId)
@@ -60,17 +61,17 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.usage_of_creditline', usage_of_crditLine)
 
         # 贷款笔数
-        freq_of_loan = query_freq_of_loan(partyId)
+        freq_of_loan = dataContext.get_value('loanFreq')
         logger.info('Prepare to build tup by freq_of_loan=[%s], partyId=[%s]', freq_of_loan, partyId)
         tup_rec.set_tag('credit.pcr.freq_of_loan', freq_of_loan)
 
         # 贷款金额总和
-        total_loanamount = query_total_loanamount(partyId)
+        total_loanamount = dataContext.get_value('totalLoanAmount')
         logger.info('Prepare to build tup by total_loanamount=[%s], partyId=[%s]', total_loanamount, partyId)
         tup_rec.set_tag('credit.pcr.total_Loanamount', total_loanamount)
 
         # 贷款余额总和
-        total_loanamount_used = query_total_loanamount_used(partyId)
+        total_loanamount_used = dataContext.get_value('totalCreditLineUsed')
         logger.info('Prepare to build tup by total_loanamount_used=[%s], partyId=[%s]', total_loanamount_used, partyId)
         tup_rec.set_tag('credit.pcr.total_Loanamount_used', total_loanamount_used)
 
@@ -100,7 +101,7 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.overdue_of_loan', overdue_of_loan)
 
         # 逾期90天及以上信用卡数
-        over_card_result = query_number_of_everdelinquencyM3creditcard(partyId)
+        over_card_result = query_number_of_everdelinquencyM3creditcard(maxId)
         if over_card_result == []:
             number_of_everdelinquencycard = 0
         else:
@@ -109,7 +110,7 @@ class CreditTagsBuilder(TagsBuilder):
         tup_rec.set_tag('credit.pcr.number_of_everdelinquencyM3creditcard', number_of_everdelinquencycard)
 
         # 逾期90天及以上贷款数
-        over_loan_result = query_number_of_everdelinquencyM3loan(partyId)
+        over_loan_result = query_number_of_everdelinquencyM3loan(maxId)
 
         if over_loan_result == []:
             number_of_exceedloan = 0
@@ -118,7 +119,7 @@ class CreditTagsBuilder(TagsBuilder):
         logger.info('Prepare to build tup by over_loan_result=[%s], partyId=[%s]', number_of_exceedloan, partyId)
         tup_rec.set_tag('credit.pcr.number_of_everdelinquencyM3loan', number_of_exceedloan)
 
-        number_query_creditcardapply = query_creditcardapply(partyId)
+        number_query_creditcardapply = query_creditcardapply(maxId)
 
         # 临柜查询次数
         logger.info('Prepare to build tup by number_of_countercheck=[%s], partyId=[%s]', number_query_creditcardapply[0], partyId)

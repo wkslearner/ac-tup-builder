@@ -10,12 +10,12 @@ class PcrBasicPartyDataSource(DataSource):
         self.relatedPartyIdFinder = RelatedPartyIdFinder()
 
         self.session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_cif_db')
-        sql_text = '''select  acp.partyId, acp.createTime createTime 
-                        from ac_ccis_db.PCRBasicInfo acp 
+        sql_text = '''SELECT MAX(abasic.id) id, abasic.partyId partyId, abasic.creditCardNum, abasic.loanFreq loanFreq,
+                        abasic.totalLoanAmount totalLoanAmount, abasic. totalCreditLineUsed totalCreditLineUsed
+                        FROM ac_ccis_db.PCRBasicInfo abasic
                         where 
-                            (acp.createTime>=:fromTime and acp.createTime<:toTime)
-                          
-                        order by acp.createTime
+                            (abasic.createTime>=:fromTime and abasic.createTime<:toTime)
+                       GROUP BY partyId
         '''
 
         sql_paras = dict()

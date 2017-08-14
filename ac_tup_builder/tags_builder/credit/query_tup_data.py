@@ -11,22 +11,18 @@ def get_max_count():
     return int(bootstrap.ti_config_service.get_value('query_max_size'))
 
 # 查询信用历史长度
-def query_length_of_history(partyId):
+def query_length_of_history(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
 
-    sql_text = '''select MIN(acard.opendate) MinTime, MIN(aload.loanDate) MinloanTime, acard.creditId, maxid.partyId
-                  from (
-	                  SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  )maxid,
-                  ac_ccis_db.PCRCardCreditRecord acard,  ac_ccis_db.PCRLoanRecord aload
+    sql_text = '''select MIN(acard.opendate) MinTime, MIN(aload.loanDate) MinloanTime, acard.creditId
+                  from ac_ccis_db.PCRCardCreditRecord acard,  ac_ccis_db.PCRLoanRecord aload
 
-                  WHERE acard.creditId = maxid.id
+                  WHERE acard.creditId = :maxId
                   and acard.creditId = aload.creditId
-                  and maxid.partyId = :partyId
                   
                   GROUP BY acard.creditId, aload.creditId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
     now = datetime.date.today()
     result = []
     for row in row_list:
@@ -37,14 +33,14 @@ def query_length_of_history(partyId):
 
     return str(result)
 
-
-# 查询信用卡张数
+'''
+# 查询信用卡张数  不用
 def query_number_of_creditcard(partyId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT creditCardNum FROM ac_ccis_db.PCRBasicInfo apc
+    sql_text = SELECT creditCardNum FROM ac_ccis_db.PCRBasicInfo apc
                   WHERE apc.partyId = :partyId
                   
-                '''
+                
     row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
@@ -52,76 +48,46 @@ def query_number_of_creditcard(partyId):
         result = row[0]
 
     return result
+'''
 
 
 # 查询人民币信用卡张数
-def query_number_of_CNYcreditcard(partyId):
+def query_number_of_CNYcreditcard(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT COUNT(*) number, creditId, maxid.partyId
-                  FROM(
-	                    SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      )maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT apc.closeDate, apc.creditId
+                  FROM ac_ccis_db.PCRCardCreditRecord apc
 
                   WHERE apc.currencyCode = 'CNY' 
-                  AND apc.creditId = maxid.id
-                  AND maxid.partyId = :partyId
-
-                  GROUP BY creditId
-                  
+                  AND apc.creditId = :maxId                 
                '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
-    result = []
+    number_of_CNYcreditcard = 0
+    number_of_uncanceledCNYcreditcard = 0
+    result = 0
     for row in row_list:
-        result = row[0]
+        number_of_CNYcreditcard = number_of_CNYcreditcard + 1
+        if row[0] is None:
+            number_of_uncanceledCNYcreditcard = number_of_uncanceledCNYcreditcard + 1
 
-    return result
-
-
-# 查询未销户的人民币信用卡张数
-def query_number_of_uncanceledCNYcreditcard(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT COUNT(*) number, creditId, maxid.partyId
-                  FROM(
-    	                SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      )maxid, ac_ccis_db.PCRCardCreditRecord apc
-
-                  WHERE apc.currencyCode = 'CNY'
-                  AND apc.closeDate is NULL
-                  AND apc.creditId = maxid.id
-                  AND maxid.partyId = :partyId
-
-                  GROUP BY creditId
-            '''
-
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = row[0]
-
-    return result
-
+    return number_of_CNYcreditcard, number_of_uncanceledCNYcreditcard
 
 # 查询信用卡额度总和(不包含未激活或已注销的卡)
-def query_number_of_total_crditline(partyId):
+def query_number_of_total_crditline(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT SUM(creditLine) number, creditId, maxid.partyId
-                  FROM(
-        	          SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      )maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT SUM(creditLine) number, creditId
+                  FROM ac_ccis_db.PCRCardCreditRecord apc
 
                   WHERE apc.currencyCode = 'CNY' 
-                  AND apc.creditId = maxid.id
+                  AND apc.creditId = :maxId
                   AND apc.creditCardStatus <> '04'
                   AND apc.creditCardStatus <> '05'
-                  AND maxid.partyId = :partyId
                   
                   GROUP BY creditId
                 '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -131,23 +97,20 @@ def query_number_of_total_crditline(partyId):
 
 
 # 查询信用卡已用额度总和(不包含未激活或已注销的卡)
-def query_number_of_total_crditline_used(partyId):
+def query_number_of_total_crditline_used(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT SUM(creditLineUsed) number, creditId, maxid.partyId
-                  FROM(
-            	      SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  )maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT SUM(creditLineUsed) number, creditId
+                  FROM ac_ccis_db.PCRCardCreditRecord apc
 
                   WHERE apc.currencyCode = 'CNY' 
-                  AND apc.creditId = maxid.id
+                  AND apc.creditId = :maxId
                   AND apc.creditCardStatus <> '04'
                   AND apc.creditCardStatus <> '05'
-                  AND maxid.partyId = :partyId
 
                   GROUP BY creditId
                 '''
 
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -158,75 +121,16 @@ def query_number_of_total_crditline_used(partyId):
 
     return result
 
-
-# 贷款笔数
-def query_freq_of_loan(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = ''' SELECT abasic.loanFreq loanFreq, MAX(abasic.id) id, abasic.partyId partyId
-                    FROM ac_ccis_db.PCRBasicInfo abasic 
-                    WHERE abasic.partyId = :partyId
-                    GROUP BY partyId, loanFreq
-               '''
-
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = float(row[0])
-
-    return result
-
-
-# 贷款金额总和
-def query_total_loanamount(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = ''' SELECT abasic.totalLoanAmount, MAX(abasic.id) id, abasic.partyId partyId
-                   FROM ac_ccis_db.PCRBasicInfo abasic 
-                    WHERE abasic.partyId = :partyId
-                    GROUP BY partyId, totalLoanAmount
-                   '''
-
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = float(row[0])
-
-    return result
-
-
-# 贷款余额总和
-def query_total_loanamount_used(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = ''' SELECT abasic.totalCreditLineUsed, MAX(abasic.id) id, abasic.partyId partyId
-                   FROM ac_ccis_db.PCRBasicInfo abasic 
-                   WHERE abasic.partyId = :partyId
-                   GROUP BY partyId, totalCreditLineUsed
-                '''
-
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
-
-    result = []
-    for row in row_list:
-        result = float(row[0])
-
-    return result
-
-
 # 呆账信用卡数
-def query_number_of_creditcardbaddebts(partyId):
+def query_number_of_creditcardbaddebts(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.creditId) sum, maxid.partyId FROM
-	              (
-		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  ) maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT count(apc.creditId) sum FROM
+	               ac_ccis_db.PCRCardCreditRecord apc
 
-                  WHERE maxid.id = apc.creditId
+                  WHERE apc.creditId = :maxId
                   AND apc.creditCardStatus = '03'
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
               '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -236,19 +140,15 @@ def query_number_of_creditcardbaddebts(partyId):
 
 
 # 信用卡是否当前逾期
-def query_overdue_of_creditcard(partyId):
+def query_overdue_of_creditcard(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.creditId) sum, maxid.partyId FROM
-    	              (
-    		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      ) maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT count(apc.creditId) sum FROM
+    	              ac_ccis_db.PCRCardCreditRecord apc
 
-                      WHERE maxid.id = apc.creditId
+                      WHERE apc.creditId = :maxId
                       AND apc.creditCardStatus = '06'
-                      AND maxid.partyId = :partyId
-                      GROUP BY maxid.partyId
                   '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -258,19 +158,15 @@ def query_overdue_of_creditcard(partyId):
 
 
 # 贷款是否当前逾期
-def query_overdue_of_loan(partyId):
+def query_overdue_of_loan(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT sum(apc.amountOverdued), maxid.partyId FROM
-	              (
-		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  ) maxid, ac_ccis_db.PCRLoanRecord apc
+    sql_text = '''SELECT sum(apc.amountOverdued) FROM
+	               ac_ccis_db.PCRLoanRecord apc
 
-                  WHERE maxid.id = apc.creditId
+                  WHERE apc.creditId = :maxId
                   AND apc.amountOverdued is not NULL
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
                       '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -279,19 +175,15 @@ def query_overdue_of_loan(partyId):
     return result
 
 # 逾期90天及以上信用卡数
-def query_number_of_everdelinquencyM3creditcard(partyId):
+def query_number_of_everdelinquencyM3creditcard(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.exceedNinetyDaysMonths) sum, apc.creditId, maxid.partyId FROM
-	              (
-		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                  ) maxid, ac_ccis_db.PCRCardCreditRecord apc
+    sql_text = '''SELECT count(apc.exceedNinetyDaysMonths) sum, apc.creditId FROM
+	              ac_ccis_db.PCRCardCreditRecord apc
 
-                  WHERE maxid.id = apc.creditId
+                  WHERE apc.creditId = :maxId
                   AND apc.exceedNinetyDaysMonths <> 0
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId
                           '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -300,19 +192,16 @@ def query_number_of_everdelinquencyM3creditcard(partyId):
     return result
 
 # 逾期90天及以上贷款数
-def query_number_of_everdelinquencyM3loan(partyId):
+def query_number_of_everdelinquencyM3loan(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT count(apc.exceedNinetyDaysMonths) sum, apc.creditId, maxid.partyId FROM
-    	              (
-    		            SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                      ) maxid, ac_ccis_db.PCRLoanRecord apc
+    sql_text = '''SELECT count(apc.exceedNinetyDaysMonths) sum, apc.creditId FROM
+    	             ac_ccis_db.PCRLoanRecord apc
 
-                      WHERE maxid.id = apc.creditId
+                      WHERE apc.creditId = :maxId
                       AND apc.exceedNinetyDaysMonths <> 0
-                      AND maxid.partyId = :partyId
-                      GROUP BY maxid.partyId
+                      
                               '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -321,17 +210,14 @@ def query_number_of_everdelinquencyM3loan(partyId):
     return result
 
 # 信用卡审批
-def query_creditcardapply(partyId):
+def query_creditcardapply(maxId):
     session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
-    sql_text = '''SELECT apc.accessReason, maxid.partyId FROM
-        	            (
-        		          SELECT MAX(abasic.id) id, abasic.partyId partyId FROM ac_ccis_db.PCRBasicInfo abasic GROUP BY partyId
-                        ) maxid, ac_ccis_db.PCRAccessRecord apc
-                  WHERE maxid.id = apc.creditId
-                  AND maxid.partyId = :partyId
-                  GROUP BY maxid.partyId,apc.accessReason
+    sql_text = '''SELECT apc.accessReason FROM
+        	       ac_ccis_db.PCRAccessRecord apc
+                  WHERE apc.creditId = :maxId
+                  GROUP BY apc.accessReason
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'maxId': maxId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     number_of_countercheck = 0
     number_of_onlinecheck = 0
@@ -362,13 +248,13 @@ def query_creditcardapply(partyId):
 
 # 芝麻信用分
 def query_score_of_zmxycredit(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
     sql_text = '''SELECT zmxy.data 
-                  from bi_data_db.ZmxyReport zmxy 
+                  from ac_ccis_db.ZmxyReport zmxy 
                   WHERE zmxy.partyId = :partyId
                   order by zmxy.idZmxyReport desc
                     '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/bi_data_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -382,12 +268,12 @@ def query_score_of_zmxycredit(partyId):
 
 # 芝麻信用行业关注名单当前逾期笔数
 def query_overdue_of_zmxywatchlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
     sql_text = '''SELECT zmxy.data 
-                  from bi_data_db.ZmxyWatchListReport zmxy
+                  from ac_ccis_db.ZmxyWatchListReport zmxy
                   WHERE zmxy.partyId = :partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     count_result_ture = 0
     count_result_false = 0
@@ -406,13 +292,13 @@ def query_overdue_of_zmxywatchlist(partyId):
 
 # 芝麻反欺诈分
 def query_score_of_zmxyantifruadlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
     sql_text = '''SELECT zmxy.data 
-                      from bi_data_db.ZmxyAntifraudScoreReport zmxy 
+                      from ac_ccis_db.ZmxyAntifraudScoreReport zmxy 
                       WHERE zmxy.partyId = :partyId
                       order by zmxy.idZmxyAntifraudScoreReport desc
                         '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
 
     result = []
     for row in row_list:
@@ -423,6 +309,6 @@ def query_score_of_zmxyantifruadlist(partyId):
 
     return result
 
-#init_app()
-#data =  query_creditcardapply('1012222000004361')
-#print(data[0])
+init_app()
+query_number_of_CNYcreditcard(120)
+
