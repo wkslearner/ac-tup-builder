@@ -72,4 +72,4 @@ def execute():
     init_app()
     build_by_org_party(None, '2015-10-23', '2015-10-24')
 
-execute()
+#execute()
