@@ -76,6 +76,6 @@ def execute():
         return
 
     query_day = sys.argv[1]
-    now_time = datetime.strftime(query_day, '%Y-%m-%d')
+    print(query_day)
 
-    build_by_org_party(now_time, '2015-10-24', '2015-10-25')
+    build_by_org_party(query_day, '2015-10-24', '2015-10-25')
