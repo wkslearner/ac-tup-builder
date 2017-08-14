@@ -71,12 +71,10 @@ def build_by_org_party(extract_date=None, from_date=None, to_date=None):
 
 def execute():
     init_app()
-    #if len(sys.argv) != 2:
-     #   return
+    if len(sys.argv) != 2:
+        return
 
-    #query_day = sys.argv[1]
-    #now_time = time.strftime('%Y-%m-%d',query_day)
+    query_day = sys.argv[1]
+    now_time = time.strftime('%Y-%m-%d',query_day)
 
-    build_by_org_party(None, '2015-10-24', '2015-10-25')
-
-execute()
+    build_by_org_party(now_time, '2015-10-24', '2015-10-25')
