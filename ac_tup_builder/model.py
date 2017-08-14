@@ -1,10 +1,12 @@
+from abc import abstractmethod
+from base64 import decode
+from cx_Oracle import LOB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, BigInteger, String, Integer, DateTime, Boolean, desc, orm
-from abc import abstractmethod
 from datetime import datetime
 import json
 from ti_util import json_util
-import dpath.util
+import dpath.util, types
 from ti_daf.sql_tx import session_scope
 
 
@@ -38,6 +40,10 @@ class AbstractTupRecord(object):
         if self.tupData is None:
             self.tupDataObject = dict()
         else:
+            if isinstance(self.tupData, (str)):
+                pass
+            else:
+                self.tupData = self.tupData.read()
             self.tupDataObject = json.loads(self.tupData, object_hook=json_util.object_hook_ts_str)
 
     def dump_tup_data(self):
