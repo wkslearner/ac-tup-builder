@@ -15,7 +15,7 @@ class PcrBasicPartyDataSource(DataSource):
                         FROM ac_ccis_db.PCRBasicInfo abasic
                         where 
                             (abasic.createTime>=:fromTime and abasic.createTime<:toTime)
-                       GROUP BY partyId, abasic.creditCardNum
+                       GROUP BY partyId, abasic.creditCardNum, abasic.loanFreq
         '''
 
         sql_paras = dict()
