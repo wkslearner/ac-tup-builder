@@ -284,9 +284,10 @@ def query_score_of_zmxyantifruadlist(partyId):
 
     result = []
     for row in row_list:
-        snapshot_data = json.loads(row[0], object_hook=json_util.object_hook_ts_str)
-        if 'score' in snapshot_data.keys():
-            result = snapshot_data['score']
-            break
+        if row is not None:
+            snapshot_data = json.loads(row[0], object_hook=json_util.object_hook_ts_str)
+            if 'score' in snapshot_data.keys():
+                result = snapshot_data['score']
+                break
 
     return result
