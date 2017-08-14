@@ -230,13 +230,13 @@ def query_creditcardapply(maxId):
 
 # 芝麻信用分
 def query_score_of_zmxycredit(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                  from ac_ccis_db.ZmxyReport zmxy 
+                  from bi_data_db.ZmxyReport zmxy 
                   WHERE zmxy.partyId = :partyId
                   order by zmxy.idZmxyReport desc
                     '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/ac_ccis_db', max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId},ns_server_id='/db/mysql/bi_data_db', max_size=-1)
 
     result = []
     for row in row_list:
@@ -250,12 +250,12 @@ def query_score_of_zmxycredit(partyId):
 
 # 芝麻信用行业关注名单当前逾期笔数
 def query_overdue_of_zmxywatchlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                  from ac_ccis_db.ZmxyWatchListReport zmxy
+                  from bi_data_db.ZmxyWatchListReport zmxy
                   WHERE zmxy.partyId = :partyId
                 '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
 
     count_result_ture = 0
     count_result_false = 0
@@ -274,25 +274,20 @@ def query_overdue_of_zmxywatchlist(partyId):
 
 # 芝麻反欺诈分
 def query_score_of_zmxyantifruadlist(partyId):
-    session = SqlTemplate.new_session(ns_server_id='/db/mysql/ac_ccis_db')
+    session = SqlTemplate.new_session(ns_server_id='/db/mysql/bi_data_db')
     sql_text = '''SELECT zmxy.data 
-                      from ac_ccis_db.ZmxyAntifraudScoreReport zmxy 
+                      from bi_data_db.ZmxyAntifraudScoreReport zmxy 
                       WHERE zmxy.partyId = :partyId
                       order by zmxy.idZmxyAntifraudScoreReport desc
                         '''
-    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/ac_ccis_db',max_size=-1)
+    row_list = sql_util.select_rows_by_sql(sql_text, {'partyId': partyId}, ns_server_id='/db/mysql/bi_data_db',max_size=-1)
 
     result = []
 
     for row in row_list:
-        if row is not None:
-            snapshot_data = json.loads(row[0], object_hook=json_util.object_hook_ts_str)
-            if 'score' in snapshot_data.keys():
-                result = snapshot_data['score']
-                break
+        snapshot_data = json.loads(row[0], object_hook=json_util.object_hook_ts_str)
+        if 'score' in snapshot_data.keys():
+            result = snapshot_data['score']
+            break
 
     return result
-
-init_app()
-restul = query_score_of_zmxyantifruadlist('1012222000418781')
-print(restul)
