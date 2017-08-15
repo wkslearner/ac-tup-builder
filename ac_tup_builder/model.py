@@ -292,7 +292,6 @@ class SqlTupRecordStorage(TupRecordStorage):
 
                 for rec in tup_history_recs:
                     print(rec.__dict__)
-
                 session.bulk_save_objects(tup_history_recs)
 
     def query(self, tagNamePrefix: str, gpartyId: str, lastPartyId: str = None):
