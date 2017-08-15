@@ -2,7 +2,7 @@ from abc import abstractmethod
 from base64 import decode
 from cx_Oracle import LOB
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, BigInteger, String, Integer, DateTime, Boolean, desc, orm
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, desc, orm
 from datetime import datetime
 import json
 from ti_util import json_util
@@ -87,7 +87,7 @@ class AbstractTupRecord(object):
 class TupHistoryRecord(Base):
     __tablename__ = 'tuphistoryrecord'
 
-    idTupHistoryRecord = Column('idtupistoryrecord', BigInteger, primary_key=True, nullable=False, autoincrement=True)
+    idTupHistoryRecord = Column('idtupistoryrecord', Integer, primary_key=True, nullable=False, autoincrement=True)
     gpartyId = Column('gpartyid', String, nullable=False)
     tagName = Column('tagname', String, nullable=False)
     oldValue = Column('oldvalue', String, nullable=True)
