@@ -9,16 +9,15 @@ from ti_util import json_util
 import dpath.util, types
 from ti_daf.sql_tx import session_scope
 
-
 Base = declarative_base()
 
 
 class AbstractTupRecord(object):
-    gpartyId = Column('gpartyid',String, primary_key=True, nullable=False)
-    lastPartyId = Column('lastpartyid',String, nullable=False)
-    tupData = Column('tupdata',String, nullable=False)
-    crtTime = Column('crttime',DateTime, nullable=False)
-    updTime = Column('updtime',DateTime, nullable=False)
+    gpartyId = Column('gpartyid', String, primary_key=True, nullable=False)
+    lastPartyId = Column('lastpartyid', String, nullable=False)
+    tupData = Column('tupdata', String, nullable=False)
+    crtTime = Column('crttime', DateTime, nullable=False)
+    updTime = Column('updtime', DateTime, nullable=False)
 
     historyRecs = None
 
@@ -50,11 +49,11 @@ class AbstractTupRecord(object):
         if self.tupDataObject is not None:
             self.tupData = json.dumps(self.tupDataObject, default=json_util.default_ts_str)
 
-    def __check_tag_name(self, tagName:str):
-        if tagName.startswith(self.tagNamePrefix+'.') is False:
+    def __check_tag_name(self, tagName: str):
+        if tagName.startswith(self.tagNamePrefix + '.') is False:
             raise ValueError('The prefix of tagName must be [' + self.tagNamePrefix + '.]')
 
-    def get_tag(self, tagName:str):
+    def get_tag(self, tagName: str):
         self.__check_tag_name(tagName)
 
         if self.tupDataObject is None:
@@ -65,7 +64,7 @@ class AbstractTupRecord(object):
         except KeyError:
             return None
 
-    def set_tag(self, tagName:str, value):
+    def set_tag(self, tagName: str, value):
         self.__check_tag_name(tagName)
 
         if self.tupDataObject is None:
@@ -88,12 +87,12 @@ class AbstractTupRecord(object):
 class TupHistoryRecord(Base):
     __tablename__ = 'tuphistoryrecord'
 
-    idTupHistoryRecord = Column('idtupistoryrecord',BigInteger, primary_key=True, nullable=False,autoincrement=True)
-    gpartyId = Column('gpartyid',String, nullable=False)
-    tagName = Column('tagname',String, nullable=False)
-    oldValue = Column('oldvalue',String, nullable=True)
-    newValue = Column('newvalue',String, nullable=False)
-    crtTime = Column('crttime',DateTime, nullable=False)
+    idTupHistoryRecord = Column('idtupistoryrecord', BigInteger, primary_key=True, nullable=False, autoincrement=True)
+    gpartyId = Column('gpartyid', String, nullable=False)
+    tagName = Column('tagname', String, nullable=False)
+    oldValue = Column('oldvalue', String, nullable=True)
+    newValue = Column('newvalue', String, nullable=False)
+    crtTime = Column('crttime', DateTime, nullable=False)
 
     def __init__(self):
         pass
@@ -228,18 +227,18 @@ class LoanTupRecord(AbstractTupRecord, Base):
 
 class TupRecordStorage(object):
     @abstractmethod
-    def save(self, tupRec:AbstractTupRecord):
+    def save(self, tupRec: AbstractTupRecord):
         pass
 
     @abstractmethod
-    def query(self, tagNamePrefix:str, gpartyId:str):
+    def query(self, tagNamePrefix: str, gpartyId: str):
         pass
 
     @abstractmethod
     def query_by_lastPartyId(self, tagNamePrefix: str, lastPartyId: str):
         pass
 
-    def _new(self, tagNamePrefix:str, gpartyId:str) -> AbstractTupRecord:
+    def _new(self, tagNamePrefix: str, gpartyId: str) -> AbstractTupRecord:
         if tagNamePrefix == TagNamePrefixes.POPULATION:
             return PopulationTupRecord(gpartyId=gpartyId)
         elif tagNamePrefix == TagNamePrefixes.SOCIAL:
@@ -259,14 +258,14 @@ class TupRecordStorage(object):
 
         raise ValueError('Unsupported tagNamePrefix=[' + tagNamePrefix + ']')
 
-    def query_or_new(self, tagNamePrefix:str, gpartyId:str):
+    def query_or_new(self, tagNamePrefix: str, gpartyId: str):
         tupRec = self.query(tagNamePrefix, gpartyId)
         if tupRec is None:
             tupRec = self._new(tagNamePrefix, gpartyId)
 
         return tupRec
 
-    def query_or_new_by_lastPartyId(self, tagNamePrefix:str, lastPartyId:str):
+    def query_or_new_by_lastPartyId(self, tagNamePrefix: str, lastPartyId: str):
         tupRec = self.query_by_lastPartyId(tagNamePrefix, lastPartyId)
         if tupRec is None:
             tupRec = self._new(tagNamePrefix, lastPartyId)
@@ -275,7 +274,7 @@ class TupRecordStorage(object):
 
 
 class SqlTupRecordStorage(TupRecordStorage):
-    def save(self, tupRec:AbstractTupRecord):
+    def save(self, tupRec: AbstractTupRecord):
         with session_scope() as session:
             tupRec.dump_tup_data()
             session.add(tupRec)
@@ -289,12 +288,14 @@ class SqlTupRecordStorage(TupRecordStorage):
                     tup_history_rec.crtTime = tupRec.updTime
                     tup_history_rec.setOldValueObject(values[0])
                     tup_history_rec.setNewValueObject(values[1])
-
+                    his_str = json.dumps(tup_history_rec, default=json_util.default_ts_str,
+                                         ensure_ascii=False)
+                    print(his_str)
                     tup_history_recs.append(tup_history_rec)
 
                 session.bulk_save_objects(tup_history_recs)
 
-    def query(self, tagNamePrefix:str, gpartyId:str, lastPartyId:str=None):
+    def query(self, tagNamePrefix: str, gpartyId: str, lastPartyId: str = None):
         with session_scope() as session:
             if tagNamePrefix == TagNamePrefixes.POPULATION:
                 return session.query(PopulationTupRecord).filter(PopulationTupRecord.gpartyId == gpartyId).first()
