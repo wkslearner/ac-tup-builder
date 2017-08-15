@@ -288,8 +288,6 @@ class SqlTupRecordStorage(TupRecordStorage):
                     tup_history_rec.setNewValueObject(values[1])
                     tup_history_recs.append(tup_history_rec)
 
-                for rec in tup_history_recs:
-                    print(rec.__dict__)
                 session.bulk_save_objects(tup_history_recs)
 
     def query(self, tagNamePrefix: str, gpartyId: str, lastPartyId: str = None):
