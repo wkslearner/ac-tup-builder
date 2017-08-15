@@ -78,4 +78,4 @@ def execute():
     query_day = sys.argv[1]
     print(query_day)
 
-    build_by_org_party(None, '2015-10-24', '2017-10-25')
+    build_by_org_party(query_day, '2015-10-24', '2017-10-25')
