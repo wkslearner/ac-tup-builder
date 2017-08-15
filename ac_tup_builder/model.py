@@ -1,12 +1,10 @@
 from abc import abstractmethod
-from base64 import decode
-from cx_Oracle import LOB
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Integer, DateTime, Boolean, desc, orm
+from sqlalchemy import Column, String, Integer, DateTime, orm
 from datetime import datetime
 import json
 from ti_util import json_util
-import dpath.util, types
+import dpath.util
 from ti_daf.sql_tx import session_scope
 
 Base = declarative_base()
