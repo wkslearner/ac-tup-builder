@@ -288,10 +288,10 @@ class SqlTupRecordStorage(TupRecordStorage):
                     tup_history_rec.crtTime = tupRec.updTime
                     tup_history_rec.setOldValueObject(values[0])
                     tup_history_rec.setNewValueObject(values[1])
-                    his_str = json.dumps(tup_history_rec, default=json_util.default_ts_str,
-                                         ensure_ascii=False)
-                    print(his_str)
                     tup_history_recs.append(tup_history_rec)
+
+                for rec in tup_history_recs:
+                    print(rec.__dict__)
 
                 session.bulk_save_objects(tup_history_recs)
 
